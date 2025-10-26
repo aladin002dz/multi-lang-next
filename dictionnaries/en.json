@@ -1,0 +1,20 @@
+{
+    "home": {
+        "title": "Home",
+        "description": "Home page"
+    },
+    "about": {
+        "title": "About",
+        "description": "About page"
+    },
+    "contact": {
+        "title": "Contact",
+        "description": "Contact page"
+    },
+    "language": {
+        "title": "Language",
+        "en": "English",
+        "fr": "Français",
+        "ar": "العربية"
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "home": {
+        "title": "الرئيسية",
+        "description": "الصفحة الرئيسية"
+    },
+    "about": {
+        "title": "عن الشركة",
+        "description": "الصفحة العن الشركة"
+    },
+    "contact": {
+        "title": "اتصل بنا",
+        "description": "الصفحة اتصل بنا"
+    },
+    "language": {
+        "title": "اللغة",
+        "en": "English",
+        "fr": "Français",
+        "ar": "العربية"
+    }
+}

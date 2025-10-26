@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const locales = ['en', 'fr']
+const locales = ['en', 'fr', 'ar']
 
 // Get the preferred locale, similar to the above or using a library
 function getLocale(request: NextRequest) {
@@ -26,8 +26,8 @@ export function proxy(request: NextRequest) {
 
 export const config = {
     matcher: [
-        // Skip all internal paths (_next)
-        '/((?!_next).*)',
+        // Skip all internal paths (_next) and static files
+        '/((?!_next|.*\\.).*)',
         // Optional: only run on root (/) URL
         // '/'
     ],
