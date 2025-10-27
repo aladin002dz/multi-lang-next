@@ -1,36 +1,327 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Multi-Language Next.js App
 
-## Getting Started
+![Next.js](https://img.shields.io/badge/Next.js-16.0.0-black?style=for-the-badge&logo=next.js)
+![React](https://img.shields.io/badge/React-19.2.0-blue?style=for-the-badge&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)
+![next-intl](https://img.shields.io/badge/next--intl-4.4.0-green?style=for-the-badge)
 
-First, run the development server:
+A modern, multilingual Next.js application with internationalization (i18n) support for English, French, and Arabic languages. Built with Next.js 16, React 19, TypeScript, and Tailwind CSS.
+
+## 🌍 Features
+
+- **Multi-language support**: English, French, and Arabic
+- **RTL support**: Automatic right-to-left layout for Arabic
+- **Automatic locale detection**: Based on user preferences
+- **Type-safe translations**: Using next-intl
+- **Modern UI**: Built with Tailwind CSS
+- **TypeScript**: Full type safety throughout the application
+
+
+## 📚 Step-by-Step Guide: Implementing Internationalization with Next.js
+
+This guide will walk you through implementing internationalization in a Next.js application using `next-intl`.
+
+### Step 1: Install Dependencies
 
 ```bash
-npm run dev
+pnpm add next-intl
 # or
-yarn dev
+npm install next-intl
 # or
-pnpm dev
+yarn add next-intl
 # or
-bun dev
+bun add next-intl
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Step 2: Configure Next.js
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Update your `next.config.ts` to include the next-intl plugin:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```typescript
+import { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
 
-## Learn More
+const nextConfig: NextConfig = {};
 
-To learn more about Next.js, take a look at the following resources:
+const withNextIntl = createNextIntlPlugin();
+export default withNextIntl(nextConfig);
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Step 3: Set Up Routing Configuration
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create `i18n/routing.ts`:
 
-## Deploy on Vercel
+```typescript
+import { defineRouting } from 'next-intl/routing';
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+export const routing = defineRouting({
+    // A list of all locales that are supported
+    locales: ['en', 'fr', 'ar'],
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+    // Used when no locale matches
+    defaultLocale: 'en',
+
+    // Enable automatic locale detection
+    localeDetection: true
+});
+```
+
+### Step 4: Create Request Configuration
+
+Create `i18n/request.ts`:
+
+```typescript
+import { hasLocale } from 'next-intl';
+import { getRequestConfig } from 'next-intl/server';
+import { routing } from './routing';
+
+export default getRequestConfig(async ({ requestLocale }) => {
+    // Get the requested locale from the URL
+    const requested = await requestLocale;
+
+    // Check if the requested locale is valid
+    const locale = hasLocale(routing.locales, requested)
+        ? requested
+        : routing.defaultLocale;
+
+    return {
+        locale,
+        messages: (await import(`../dictionnaries/${locale}.json`)).default
+    };
+});
+```
+
+### Step 5: Create Translation Files
+
+Create translation files in the `dictionnaries/` folder:
+
+**dictionnaries/en.json**:
+```json
+{
+    "HomePage": {
+        "title": "Hello world!"
+    },
+    "Navigation": {
+        "home": "Home",
+        "about": "About",
+        "contact": "Contact",
+        "language": "Language",
+        "selectLanguage": "Select Language"
+    }
+}
+```
+
+**dictionnaries/fr.json**:
+```json
+{
+    "HomePage": {
+        "title": "Bonjour le monde!"
+    },
+    "Navigation": {
+        "home": "Accueil",
+        "about": "À propos",
+        "contact": "Contact",
+        "language": "Langue",
+        "selectLanguage": "Sélectionner la langue"
+    }
+}
+```
+
+**dictionnaries/ar.json**:
+```json
+{
+    "HomePage": {
+        "title": "مرحبا بالعالم!"
+    },
+    "Navigation": {
+        "home": "الرئيسية",
+        "about": "حول",
+        "contact": "اتصل",
+        "language": "اللغة",
+        "selectLanguage": "اختر اللغة"
+    }
+}
+```
+
+### Step 6: Update App Structure
+
+Create a `[locale]` folder in your `app` directory and move your pages there:
+
+```
+app/
+├── [locale]/
+│   ├── layout.tsx
+│   └── page.tsx
+├── components/
+└── globals.css
+```
+
+### Step 7: Create Locale Layout
+
+Update `app/[locale]/layout.tsx`:
+
+```typescript
+import LocaleDetector from '@/app/components/LocaleDetector';
+import Navigation from '@/app/components/Navigation';
+import "@/app/globals.css";
+import { routing } from '@/i18n/routing';
+import type { Metadata } from "next";
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import { Geist, Geist_Mono } from "next/font/google";
+import { notFound } from 'next/navigation';
+
+type Props = {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+};
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Create Next App",
+  description: "Generated by create next app",
+};
+
+export default async function RootLayout({
+  children,
+  params,
+}: Props) {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+  return (
+    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <NextIntlClientProvider locale={locale}>
+          <LocaleDetector currentLocale={locale} />
+          <Navigation />
+          {children}
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+### Step 8: Use Translations in Components
+
+Update your pages to use translations:
+
+```typescript
+import { getTranslations } from 'next-intl/server';
+
+export default async function HomePage({ 
+  params 
+}: { 
+  params: Promise<{ locale: string }> 
+}) {
+  const { locale } = await params;
+  const t = await getTranslations('HomePage');
+  
+  return (
+    <div className="min-h-screen bg-zinc-50 font-sans dark:bg-black">
+      <main className="flex min-h-screen w-full max-w-3xl mx-auto flex-col items-center justify-center py-32 px-16 bg-white dark:bg-black sm:items-start">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-8">
+          {t('title')}
+        </h1>
+        <p className="text-lg text-gray-600 dark:text-gray-300">
+          Current language: {locale}
+        </p>
+      </main>
+    </div>
+  );
+}
+```
+
+### Step 9: Create Language Switcher Component
+
+Create a language switcher component:
+
+```typescript
+'use client';
+
+import { useRouter, usePathname } from 'next/navigation';
+import { routing } from '@/i18n/routing';
+
+export default function LocaleDetector({ currentLocale }: { currentLocale: string }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleLocaleChange = (newLocale: string) => {
+    // Remove the current locale from the pathname
+    const pathWithoutLocale = pathname.replace(`/${currentLocale}`, '');
+    // Navigate to the new locale
+    router.push(`/${newLocale}${pathWithoutLocale}`);
+  };
+
+  return (
+    <div className="p-4">
+      <select 
+        value={currentLocale} 
+        onChange={(e) => handleLocaleChange(e.target.value)}
+        className="px-3 py-2 border border-gray-300 rounded-md"
+      >
+        {routing.locales.map((locale) => (
+          <option key={locale} value={locale}>
+            {locale.toUpperCase()}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+```
+
+### Step 10: Handle RTL Support
+
+For Arabic and other RTL languages, ensure your CSS supports RTL:
+
+```css
+/* In your globals.css */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .flex {
+  flex-direction: row-reverse;
+}
+```
+
+## 🎯 Key Features Explained
+
+- **Automatic Locale Detection**: The app automatically detects the user's preferred language
+- **RTL Support**: Arabic text displays right-to-left with proper layout
+- **Type Safety**: All translations are type-safe with TypeScript
+- **SEO Friendly**: Each language has its own URL structure
+- **Client & Server Components**: Works with both server and client components
+
+## 📁 Project Structure
+
+```
+├── app/
+│   ├── [locale]/           # Locale-specific pages
+│   │   ├── layout.tsx      # Root layout with i18n
+│   │   └── page.tsx        # Home page
+│   ├── components/         # Reusable components
+│   └── globals.css         # Global styles
+├── dictionnaries/          # Translation files
+│   ├── en.json            # English translations
+│   ├── fr.json            # French translations
+│   └── ar.json            # Arabic translations
+├── i18n/                   # i18n configuration
+│   ├── routing.ts         # Locale routing config
+│   └── request.ts         # Request configuration
+└── next.config.ts         # Next.js configuration
+```
