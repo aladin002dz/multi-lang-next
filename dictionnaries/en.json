@@ -1,20 +1,12 @@
 {
-    "home": {
-        "title": "Home",
-        "description": "Home page"
+    "HomePage": {
+        "title": "Hello world!"
     },
-    "about": {
-        "title": "About",
-        "description": "About page"
-    },
-    "contact": {
-        "title": "Contact",
-        "description": "Contact page"
-    },
-    "language": {
-        "title": "Language",
-        "en": "English",
-        "fr": "Français",
-        "ar": "العربية"
+    "Navigation": {
+        "home": "Home",
+        "about": "About",
+        "contact": "Contact",
+        "language": "Language",
+        "selectLanguage": "Select Language"
     }
 }

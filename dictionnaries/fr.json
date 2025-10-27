@@ -1,20 +1,12 @@
 {
-    "home": {
-        "title": "Accueil",
-        "description": "Page d'accueil"
+    "HomePage": {
+        "title": "Bonjour le monde!"
     },
-    "about": {
-        "title": "À propos",
-        "description": "Page à propos"
-    },
-    "contact": {
-        "title": "Contact",
-        "description": "Page de contact"
-    },
-    "language": {
-        "title": "Langue",
-        "en": "English",
-        "fr": "Français",
-        "ar": "العربية"
+    "Navigation": {
+        "home": "Accueil",
+        "about": "À propos",
+        "contact": "Contact",
+        "language": "Langue",
+        "selectLanguage": "Sélectionner la langue"
     }
 }

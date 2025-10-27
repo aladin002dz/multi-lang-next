@@ -1,20 +1,12 @@
 {
-    "home": {
-        "title": "الرئيسية",
-        "description": "الصفحة الرئيسية"
+    "HomePage": {
+        "title": "مرحبا بالعالم!"
     },
-    "about": {
-        "title": "عن الشركة",
-        "description": "الصفحة العن الشركة"
-    },
-    "contact": {
-        "title": "اتصل بنا",
-        "description": "الصفحة اتصل بنا"
-    },
-    "language": {
-        "title": "اللغة",
-        "en": "English",
-        "fr": "Français",
-        "ar": "العربية"
+    "Navigation": {
+        "home": "الرئيسية",
+        "about": "حول",
+        "contact": "اتصل",
+        "language": "اللغة",
+        "selectLanguage": "اختر اللغة"
     }
 }
